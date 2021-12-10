@@ -75,7 +75,15 @@ open class MainCollectionViewContext: CollectionViewContext {
     ) -> Cell {
         let identifier = String(describing: cellType)
         if !registeredCellTypes.contains(identifier) {
-            collectionView.register(cellType, forCellWithReuseIdentifier: identifier)
+            
+            let bundle = Bundle(for: cellType)
+            if bundle.path(forResource: identifier, ofType: "nib") != nil {
+                let nib = UINib(nibName: identifier, bundle: bundle)
+                collectionView.register(nib, forCellWithReuseIdentifier: identifier)
+            } else {
+                collectionView.register(cellType, forCellWithReuseIdentifier: identifier)
+            }
+            
             registeredCellTypes.insert(identifier)
         }
         let dequeuedCell = collectionView.dequeueReusableCell(
